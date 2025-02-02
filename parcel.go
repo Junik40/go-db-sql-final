@@ -22,9 +22,6 @@ func (s ParcelStore) Add(p Parcel) (int, error) {
 
 	defer db.Close()
 
-	if err != nil {
-		return 0, err
-	}
 	res, err := db.Exec("INSERT INTO parcel (client, status, address, created_at) VALUES (:client, :status, :address, :created_at)",
 		sql.Named("client", p.Client),
 		sql.Named("status", p.Status),
@@ -154,9 +151,10 @@ func (s ParcelStore) Delete(number int) error {
 
 	defer db.Close()
 
-	_, err = db.Exec("DELETE FROM parcel WHERE number = :number, status = :status",
+	_, err = db.Exec("DELETE FROM parcel WHERE number = :number AND status = :status",
 		sql.Named("number", number),
-		sql.Named("status", "registered"))
+		sql.Named("status", ParcelStatusRegistered))
+	
 	if err != nil {
 		return err
 	}
