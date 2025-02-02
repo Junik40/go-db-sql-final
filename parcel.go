@@ -19,7 +19,7 @@ func (s ParcelStore) Add(p Parcel) (int, error) {
 	if err != nil {
 		return 0, err
 	}
-	
+
 	defer db.Close()
 
 	if err != nil {
