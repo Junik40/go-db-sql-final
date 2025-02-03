@@ -43,22 +43,22 @@ func TestAddGetDelete(t *testing.T) {
 	// add
 	// добавьте новую посылку в БД, убедитесь в отсутствии ошибки и наличии идентификатора
 	parcelNumber , err := store.Add(parcel)
-	assert.NoError(t, err)
-	assert.NotNil(t, parcelNumber)
+	require.NoError(t, err)
+	assert.GreaterOrEqual(t, parcelNumber,0)
 
 	// get
 	// получите только что добавленную посылку, убедитесь в отсутствии ошибки
 	// проверьте, что значения всех полей в полученном объекте совпадают со значениями полей в переменной parcel
-
+	parcel.Number = parcelNumber
 	testPar,err := store.Get(parcelNumber)
-	assert.NoError(t, err)
-	assert.Equal(t, parcel.Client, testPar.Client)
+	require.NoError(t, err)
+	assert.Equal(t, parcel, testPar)
 
 	// delete
 	// удалите добавленную посылку, убедитесь в отсутствии ошибки
 	// проверьте, что посылку больше нельзя получить из БД
 	err = store.Delete(parcelNumber)
-	assert.NoError(t, err)
+	require	.NoError(t, err)
 	_, err = store.Get(parcelNumber)
 	assert.Error(t, err)
 }
@@ -76,19 +76,19 @@ func TestSetAddress(t *testing.T) {
 	// add
 	// добавьте новую посылку в БД, убедитесь в отсутствии ошибки и наличии идентификатора
 	parcelNumber , err := store.Add(parcel)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, parcelNumber)
 	// set address
 	// обновите адрес, убедитесь в отсутствии ошибки
 	newAddress := "new test address"
 	err = store.SetAddress(parcelNumber, newAddress)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 
 	// check
 	// получите добавленную посылку и убедитесь, что адрес обновился
 	testPar,err := store.Get(parcelNumber)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, newAddress, testPar.Address)
 }
 
@@ -104,18 +104,18 @@ func TestSetStatus(t *testing.T) {
 	// add
 	// добавьте новую посылку в БД, убедитесь в отсутствии ошибки и наличии идентификатора
 	parcelNumber , err := store.Add(parcel)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotNil(t, parcelNumber)
 	// set status
 	// обновите статус, убедитесь в отсутствии ошибки
 	newStatus := ParcelStatusSent
 	err = store.SetStatus(parcelNumber, newStatus)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	// check
 	// получите добавленную посылку и убедитесь, что статус обновился
 	testPar,err := store.Get(parcelNumber)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.Equal(t, newStatus, testPar.Status)
 }
 
@@ -147,7 +147,7 @@ func TestGetByClient(t *testing.T) {
 
 		// добавьте новую посылку в БД, убедитесь в отсутствии ошибки и наличии идентификатора
 		id, err := store.Add(parcels[i])
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.NotZero(t, id)
 		// обновляем идентификатор добавленной у посылки
 		parcels[i].Number = id
@@ -158,8 +158,8 @@ func TestGetByClient(t *testing.T) {
 
 	// get by client
 	storedParcels, err := store.GetByClient(client)
-	assert.NoError(t, err)
-	assert.Equal(t, len(parcels), len(storedParcels))
+	require.NoError(t, err)
+	assert.Len(t, parcels, len(storedParcels))
 
 	// получите список посылок по идентификатору клиента, сохранённого в переменной client
 	// убедитесь в отсутствии ошибки
